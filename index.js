@@ -14,12 +14,6 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./src/page-template.js");
 
-
-// TODO: Write Code to gather information about the development team members, and render the HTML file.
-
-
-
-
 function writeToFile(fileName, data) {
     fs.writeFile(fileName, data, (err) =>
     err ? console.log(err) : console.log('Successfully written to team.html!'));
@@ -27,39 +21,125 @@ function writeToFile(fileName, data) {
 
 const teamInput = [];
 
-function init() {
+// TODO: Write Code to gather information about the development team members, and render the HTML file.
+function addEngineer(){
+    inquirer.prompt(engineerQuestions)
+    .then((engineerResponse) => {
+        const engineer = new Engineer(engineerResponse.engineer.name, engineerResponse.engineer.id, engineerResponse.engineer.email, engineerResponse.engineer.github);
+            teamInput.push(engineer);  
+            menu(); 
+    })
+}
+
+function addIntern(){
+    inquirer.prompt(internQuestions)
+    .then((internResponse) => {
+        const intern = new Intern(internResponse.intern.name, internResponse.intern.id, internResponse.intern.email, internResponse.intern.school);
+            teamInput.push(intern);  
+            menu(); 
+    })
+
+}
+
+function menu(){
+    inquirer.prompt([
+                {
+                type: 'list',
+                message: 'Please select from the following:',
+                choices: ['Add an engineer', 'Add an intern', 'Finish building the team'],
+                name: 'menuChoice'
+                }
+     ])
+     .then((menuResponse) => {
+        if (menuResponse.menuChoice === 'Add an engineer'){
+            addEngineer();
+        }
+        if (menuResponse.menuChoice === 'Add an intern'){
+            addIntern()
+        }
+        if (menuResponse.menuChoice === 'Finish building the team'){
+            let text = render(teamInput);
+            writeToFile(outputPath, text);
+        }
+     })
+
+ }; 
+
+function addManager(){
     inquirer.prompt(managerQuestions)
     .then((response) => {
             const manager = new Manager(response.manager.name, response.manager.id, response.manager.email, response.manager.officeNumber);
-            teamInput.push(manager);
-            if(response.manager.addOrFinish === 'Finish building the team'){
-                let text = render(teamInput);
-                writeToFile(outputPath, text);
-                return;
-            } else if(response.manager.addOrFinish === 'Add an engineer'){
-                inquirer.prompt(engineerQuestions)
-                .then((responseEng) => {
-                    const engineer = new Engineer(responseEng.engineer.name, responseEng.engineer.id, responseEng.engineer.email, responseEng.engineer.github);
-                    teamInput.push(engineer);
-                    let text = render(teamInput);
-                writeToFile(outputPath, text);
-                return;
-                })
-            } else if(response.manager.addOrFinish === 'Add an intern'){
-                inquirer.prompt(internQuestions)
-                .then((responseInt) => {
-                    const intern = new Intern(responseInt.intern.name, responseInt.intern.id, responseInt.intern.email, responseInt.intern.school);
-                    teamInput.push(intern);
-                    if (responseInt.intern.addOrFinish === 'Finish building the team'){
-                        
-                    }
-                    let text = render(teamInput);
-                writeToFile(outputPath, text);
-                return;
-                })
-            };
-    });
+            teamInput.push(manager);  
+            menu(); 
+            })
 };
+
+function init() {
+    addManager();
+}
+           
+        //     .then((responseMenu) => {
+        //         if(responseMenu.menu === 'Add an engineer'){
+        //             inquirer.prompt(engineerQuestions)
+        //             .then((responseEng) => {const engineer = new Engineer(responseEng.engineer.name, responseEng.engineer.id, responseEng.engineer.email, responseEng.engineer.github);
+        //                 teamInput.push(engineer);
+        //                 let text = render(teamInput);
+        //                  writeToFile(outputPath, text);  
+        //             });
+        //     } if(responseMenu.menu === 'Add an intern'){
+        //         inquirer.prompt(internQuestions)
+        //             .then((responseInt) => {const intern = new Intern(responseInt.intern.name, responseInt.intern.id, responseInt.intern.email, responseInt.intern.school);
+        //                 teamInput.push(intern);
+        //                 let text = render(teamInput);
+        //         writeToFile(outputPath, text);
+        //             });
+        //     } if(responseMenu.menu === 'Finish building the team'){
+        //                 let text = render(teamInput);
+        //                  writeToFile(outputPath, text);
+        //     }
+                
+                
+        //     })
+        //     })
+            
+
+
+        // }
+            
+
+
+
+
+            // if(response.manager.addOrFinish === 'Finish building the team'){
+            //     let text = render(teamInput);
+            //     writeToFile(outputPath, text);
+            //     return;
+            // } else if(response.manager.addOrFinish === 'Add an engineer'){
+            //     inquirer.prompt(engineerQuestions)
+            //     .then((responseEng) => {
+            //         const engineer = new Engineer(responseEng.engineer.name, responseEng.engineer.id, responseEng.engineer.email, responseEng.engineer.github);
+            //         teamInput.push(engineer);
+            //         let text = render(teamInput);
+            //     writeToFile(outputPath, text);
+            //     return;
+            //     })
+            // } else if(response.manager.addOrFinish === 'Add an intern'){
+            //     inquirer.prompt(internQuestions)
+            //     .then((responseInt) => {
+            //         const intern = new Intern(responseInt.intern.name, responseInt.intern.id, responseInt.intern.email, responseInt.intern.school);
+            //         teamInput.push(intern);
+            //         if (responseInt.intern.addOrFinish === 'Add an intern'){
+            //          inquirer.prompt(internQuestions)
+            //          .then((response) => {
+
+            //          })   
+            //         }
+                    
+           
+            //     })
+            // };
+//     });
+// };
 
 
 init();
